@@ -1,0 +1,81 @@
+Steps to draw a horizontal bar chart
+
+
+Step1: Import package 
+```{r}
+install.packages("dplyr")
+library(dplyr)
+install.packages("ggplot2")
+library(ggplot2)
+install.packages("tidyr")
+library(tidyr)
+install.packages("magrittr")
+library(magrittr)
+```
+
+
+Step 2: Load data
+```{r}
+stockx <- read.csv("C:/R/StockX/DATA/stockx.csv", header = TRUE)
+head(stockx, 10)
+```
+
+Step 3: Draw a horizontal bar chart
+```{r}
+install.packages("magrittr")
+library(magrittr)
+
+
+read_and_prepare_data <- function(file_path) {
+  data <- read.csv(file_path)
+  df <- data %>% 
+    mutate(release_date = as.Date(paste(release_month, release_year), format='%m %Y')) %>%
+    filter(release_date >= '2022-01-01' & release_date <= '2022-12-31')
+  return(df)
+}
+
+plot_top3_quarterly_sales <- function(ax, top3_data, title, x_label, y_label) {
+  colors <- hsl(1:num_colors(top3_data), h = 120, l = 65)
+  top3_data <- top3_data %>% arrange(number_of_sales)
+  
+  bars <- ggplot(top3_data, aes(x = number_of_sales, y = reorder(shoes_name, number_of_sales), fill = shoes_name)) +
+    geom_col() +
+    theme_minimal() +
+    labs(title = title, x = x_label, y = y_label) +
+    theme(text = element_text(size = 12))
+  
+  ax$gg <- bars
+}
+
+
+main <- function() {
+  file_path <- "C:/R/StockX/DATA/stockx.csv"
+  df_2022 <- read_and_prepare_data(file_path)
+  
+  df_quarterly_sales <- df_2022 %>% 
+    group_by(shoes_name, release_date = lubridate::floor_date(release_date, unit = 'quarter')) %>%
+    summarise(number_of_sales = sum(number_of_sales)) %>%
+    group_by(release_date) %>%
+    top_n(3, number_of_sales)
+  
+  quarters <- c('2022-03-31', '2022-06-30', '2022-09-30', '2022-12-31')
+  
+  fig <- plt.subplots(nrow = 2, ncol = 2, figsize = c(13, 5), constrained_layout = TRUE)
+  ax <- fig$axes
+  
+  for (i in seq_along(quarters)) {
+    top3_quarter_data <- df_quarterly_sales[df_quarterly_sales$release_date == quarters[i], ]
+    plot_top3_quarterly_sales(ax[[i]], top3_quarter_data, paste('Quý', i + 1), 'Số Lượng Bán', 'Loại Giày')
+  }
+  
+  plt$show()
+}
+
+
+
+
+
+
+
+main()
+```
