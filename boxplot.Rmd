@@ -1,0 +1,41 @@
+```{r}
+# Steps to draw a Box plot
+
+
+# Step 1: Import package
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+
+# Step 2: Load Data 
+data <- read.csv("C:/R/StockX/DATA/stockx.csv")
+
+print(head(data, 10))
+
+# Step 3: Draw Histogram chart
+columns_to_use <- c("avg_sale_price", "retail_price")
+df <- data[columns_to_use]
+
+Q1 <- quantile(df, 0.25)
+Q3 <- quantile(df, 0.75)
+IQR <- Q3 - Q1
+lower_bound <- Q1 - 1.5 * IQR
+upper_bound <- Q3 + 1.5 * IQR
+
+df_no_outliers <- df[apply(df, 2, function(x) x >= lower_bound & x <= upper_bound)]
+
+ggplot() +
+  geom_boxplot(data = df_no_outliers, aes(y = avg_sale_price, x = NULL), fill = "tab10") +
+  theme_minimal() +
+  labs(
+    title = "So sánh phân phối giá bán trên website với giá bán lẻ tại cửa hàng",
+    x = "Loại giá",
+    y = "Giá trị (USD)"
+  ) +
+  theme(
+    text = element_text(family = "Arial"),
+    plot.title = element_text(size = 22, face = "bold"),
+    axis.title = element_text(size = 20, face = "bold")
+  )
+
+```
