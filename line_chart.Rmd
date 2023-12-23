@@ -1,0 +1,35 @@
+Steps to draw a line chart
+
+```{r}
+# Step 1: Import package 
+library(tidyverse)
+library(ggplot2)
+
+# Step 2: Load Data 
+data <- read.csv("C:/R/StockX/DATA/stockx.csv")
+
+print(head(data, 10))
+
+# Step 3: Calculate average revenue for each year
+price_by_year <- data %>%
+  group_by(release_year) %>%
+  summarize(avg_sale_price = sum(avg_sale_price))
+price_by_year$release_year
+
+# Step 4: Draw Line chart
+ggplot(price_by_year, aes(x = release_year, y = avg_sale_price)) +
+  geom_line(color='blue') +
+  geom_text(aes(label = scales::comma(avg_sale_price, big.mark = ",")), vjust = -0.5) +
+  labs(
+    title = "Doanh thu bán hàng qua từng năm",
+    x = "Năm",
+    y = "Doanh thu (USD)"
+  ) +
+  theme(
+    text = element_text(size = 15),
+    title = element_text(size = 22, color = "red"),
+    axis.title.x = element_text(size = 20, color = "black"),
+    axis.title.y = element_text(size = 20, color = "black")
+  )
+
+```
