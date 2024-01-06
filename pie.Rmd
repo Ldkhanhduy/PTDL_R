@@ -1,0 +1,30 @@
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+stockx <- read.csv("D:/data/stockx.csv", header=TRUE)
+```
+
+```{r}
+brand_count <- sort(table(data_in_2023$brand), decreasing = TRUE)
+brand_count <- round(prop.table(brand_count)*100)
+pie_data <- data.frame(
+  brand = c('Adidas', 'Nike', 'New Balance', 'Others'),
+  pct = c(sum(brand_count[1]), sum(brand_count[2]), sum(brand_count[3]), sum(brand_count[4:length(brand_count)]))
+)
+pie_data
+```
+
+```{r}
+ggplot(pie_data, aes(x = "", y = pct, fill = brand)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  theme(legend.position = "bottom") +
+  scale_fill_manual(values = c('#FF4500', '#FF8C00', '#FFA07A', '#FFD700')) +
+  labs(title = "Biểu đồ tròn biểu thị hãng giày được bán nhiều nhất năm 2023", fill = "Brand") +
+  guides(fill = guide_legend(title = "Brand"))
+```
+

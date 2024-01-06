@@ -1,0 +1,18 @@
+```{r}
+library(dbplyr)
+```
+
+```{r}
+data <- read.csv("D:/data/500_data.csv")
+
+```
+
+```{r}
+t <- t.test(data$avg_sale_price, mu=307.19)
+t
+```
+
+```{r}
+
+```
+
