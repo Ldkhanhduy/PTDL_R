@@ -1,0 +1,63 @@
+```{r}
+library(dbplyr)
+library(ggplot2)
+library(tidyverse)
+```
+
+```{r}
+data <- read.csv("D:/data/stockx.csv", header=TRUE)
+data
+```
+
+```{r}
+data_in_2023 <- data[data$release_year == 2023, ]
+data_in_2023
+```
+
+```{r}
+data_sale_num <- data_in_2023 %>%
+  group_by(brand) %>%
+  summarise(total_sale = sum(number_of_sales))
+data_sale_num
+```
+
+
+Biểu đồ đường
+```{r}
+line_data <- data %>%
+  group_by(brand, release_year) %>%
+  summarize(number_of_sales = sum(number_of_sales)) %>%
+  spread(key = release_year, value = number_of_sales, fill = 0)
+line_data <- line_data[order(-line_data$`2023`), ]
+line_data
+```
+
+```{r}
+data_long <- gather(line_data, key = "year", value = "value", -brand)
+data_long <- na.omit(data_long)
+data_long
+```
+
+
+```{r}
+ggplot(data_long, aes(x = as.factor(year), y = value, color = brand, group = brand)) +
+  geom_line(aes(color = NULL), linetype = "dashed", size = 1) +
+  geom_point(aes(color = brand, shape = brand), size = 5) +
+  theme_minimal() +
+  labs(
+    title = "Biểu đồ đường biểu thị số lượng giày theo hãng qua các năm",
+    x = "Năm",
+    y = "Số lượng (Đôi)"
+  ) +
+  scale_shape_manual(values = c("Adidas" = 8, "Nike" = 10, "New Balance" = 15, "Reebok" = 19)) + 
+  theme(
+    plot.title = element_text(size = 20, face = "bold"),
+    axis.text.x = element_text(size = 12, face = "bold"),
+    axis.text.y = element_text(size = 12, face = "bold"),
+    axis.title.x = element_text(size = 15, face = "bold"),
+    axis.title.y = element_text(size = 15, face = "bold"),
+    legend.text = element_text(size = 12),
+    legend.position = c(0.2, 0.8)
+  )
+```
+
